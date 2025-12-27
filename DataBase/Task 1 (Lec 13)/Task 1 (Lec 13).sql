@@ -1,5 +1,5 @@
 
--- إنشاء جدول1  Manger
+-- إنشاء جدول 1  Manger
 
 CREATE TABLE Manger (
     id NUMBER PRIMARY KEY,
@@ -10,28 +10,28 @@ CREATE TABLE Manger (
 );
 
 --=====================================================================================================================================
--- 2️ حذف عمود address
+-- 2 حذف عمود address
 
 ALTER TABLE Manger
 DROP COLUMN address;
 
 --=====================================================================================================================================
 
--- 3️ إضافة أعمدة city_address و street
+-- 3 إضافة أعمدة city_address و street
 
 ALTER TABLE Manger
 ADD (city_address VARCHAR2(100), street VARCHAR2(100));
 
 --=====================================================================================================================================
 
--- 4️ تعديل اسم العمود name إلى full_name
+-- 4 تعديل اسم العمود name إلى full_name
 
 ALTER TABLE Manger
 RENAME COLUMN name TO full_name;
 
 --=====================================================================================================================================
 
--- 5️ جعل الجدول للقراءة فقط باستخدام Trigger
+-- 5 جعل الجدول للقراءة فقط باستخدام Trigger
 
 CREATE OR REPLACE TRIGGER Manger_ReadOnly
 BEFORE INSERT OR UPDATE OR DELETE ON Manger
@@ -49,7 +49,7 @@ VALUES (1, 'Mina Essam', 23, TO_DATE('2002-12-11','YYYY-MM-DD'), 'Cairo', 'Tahri
 
 --=====================================================================================================================================
 
--- 6️ إنشاء جدول Owner بنفس أعمدة Manger ولكن فقط id, name, birth_date
+-- 6 إنشاء جدول Owner بنفس أعمدة Manger ولكن فقط id, name, birth_date
 
 CREATE TABLE Owner AS
 SELECT id, full_name AS name, birth_date
@@ -58,15 +58,14 @@ WHERE 1=0;
 
 --=====================================================================================================================================
 
--- 7️ إعادة تسمية جدول Manger إلى Master
+-- 7 إعادة تسمية جدول Manger إلى Master
 
 ALTER TABLE Manger
 RENAME TO Master;
 
 --=====================================================================================================================================
 
----- 8️ حذف جميع الجداول
-
+---- 8 حذف جميع الجداول
 
 DROP TABLE Owner CASCADE CONSTRAINTS;
 DROP TABLE Master CASCADE CONSTRAINTS;
