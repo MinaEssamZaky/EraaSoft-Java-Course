@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Fav Place</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f2f2f2;
+    }
+
+    .box {
+        width: 350px;
+        margin: 80px auto;
+        padding: 20px;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        text-align: center;
+    }
+
+    input[type="text"] {
+        width: 90%;
+        padding: 8px;
+        margin-top: 10px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+    }
+
+    input[type="submit"] {
+        width: 95%;
+        padding: 10px;
+        margin-top: 15px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    input[type="submit"]:hover {
+        background-color: #45a049;
+    }
+
+    h2 {
+        color: #333;
+    }
+</style>
+</head>
+<body>
+
+<div class="box">
+    <h2>Write your favorite place</h2>
+
+    <form action="Task3_Homepage.jsp" method="post">
+        Favorite Place:
+        <input type="text" name="favPlace" >
+        <br><br>
+        <input type="submit" value="Submit">
+    </form>
+</div>
+
+</body>
+</html>

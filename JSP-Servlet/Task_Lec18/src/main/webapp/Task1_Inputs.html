@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Input User Data</title>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f2f2f2;
+    }
+
+    h2 {
+        text-align: center;
+    }
+
+    form {
+        width: 300px;
+        margin: 50px auto;
+        padding: 20px;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    input[type="text"],
+    input[type="number"] {
+        width: 100%;
+        padding: 8px;
+        margin-top: 5px;
+    }
+
+    input[type="submit"] {
+        width: 100%;
+        padding: 10px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    input[type="submit"]:hover {
+        background-color: #45a049;
+    }
+</style>
+
+</head>
+<body>
+
+<h2>User Form</h2>
+
+<form action="Task1_Result.jsp" method="post">
+    Full Name:
+    <input type="text" name="fullName" required>
+    <br><br>
+
+    Age:
+    <input type="number" name="age" required>
+    <br><br>
+
+    <input type="submit" value="Send">
+</form>
+
+</body>
+</html>
