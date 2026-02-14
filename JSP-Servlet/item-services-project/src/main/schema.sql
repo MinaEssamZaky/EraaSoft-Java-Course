@@ -1,0 +1,23 @@
+CREATE TABLE USERS (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    userName VARCHAR(100),
+    email VARCHAR(100) UNIQUE,
+    password VARCHAR(100),
+    phone VARCHAR(20)
+);
+
+CREATE TABLE ITEMS  (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) UNIQUE,
+    price DOUBLE,
+    total INT,
+    deleted INT DEFAULT 0
+);
+
+CREATE TABLE ITEM_DETAILS (
+    id INT PRIMARY KEY, 
+    description VARCHAR(500),
+    issue_date DATE,
+    expiry_date DATE,
+    CONSTRAINT fk_item FOREIGN KEY (id) REFERENCES ITEMS (id) ON DELETE CASCADE
+);
