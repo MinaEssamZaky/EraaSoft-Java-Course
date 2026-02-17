@@ -11,7 +11,7 @@ import user.model.User;
 import user.services.UserAccount;
 import user.services.impl.UserAccountImpl;
 
-@WebServlet("/UserController")
+@WebServlet("/user/UserController")
 public class UserController extends HttpServlet {
 
     @Resource(name = "jdbc/connection")
@@ -43,36 +43,69 @@ public class UserController extends HttpServlet {
         }
     }
 
-    private void signUp(HttpServletRequest req, HttpServletResponse res) throws IOException {
+    private void signUp(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
         UserAccount service = new UserAccountImpl(dataSource);
 
-        String username = safeTrim(req.getParameter("username"));
+        String userName = safeTrim(req.getParameter("userName"));
         String email = safeTrim(req.getParameter("email"));
         String password = safeTrim(req.getParameter("password"));
         String phone = safeTrim(req.getParameter("phone"));
 
-        if (username.isEmpty() || email.isEmpty() || password.isEmpty()) {
-            res.sendRedirect(req.getContextPath() + "/user/signUp.jsp");
+        if (userName.isEmpty()) {
+            req.setAttribute("error", "Username is required");
+            retainInput(req, userName, email, phone);
+            req.getRequestDispatcher("/user/signUp.jsp").forward(req, res);
+            return;
+        }
+
+        
+
+        if (password.length() < 6) {
+            req.setAttribute("error", "Password must be at least 6 characters");
+            retainInput(req, userName, email, phone);
+            req.getRequestDispatcher("/user/signUp.jsp").forward(req, res);
+            return;
+        }
+
+        if (phone.length() < 10) {
+            req.setAttribute("error", "Phone number must be at least 10 digits");
+            retainInput(req, userName, email, phone);
+            req.getRequestDispatcher("/user/signUp.jsp").forward(req, res);
             return;
         }
 
         User user = new User();
-        user.setUserName(username);
+        user.setUserName(userName);
         user.setEmail(email);
         user.setPassword(password);
         user.setPhone(phone);
 
+        if (service.isEmailExists(email)) {
+            req.setAttribute("error", "Email already registered");
+            retainInput(req, userName, email, phone);
+            req.getRequestDispatcher("/user/signUp.jsp").forward(req, res);
+            return;
+        }
+
         User saved = service.signUp(user);
 
-        if (saved != null) {
+        if (saved !=  null) {
             res.sendRedirect(req.getContextPath() + "/user/login.jsp?msg=SignUp+Success!+Please+login.");
         } else {
-            res.sendRedirect(req.getContextPath() + "/user/signUp.jsp?error=Email+already+exists");
+            req.setAttribute("error", "Registration failed. Please try again.");
+            retainInput(req, userName, email, phone);
+            req.getRequestDispatcher("/user/signUp.jsp").forward(req, res);
         }
-       
     }
 
-    private void signIn(HttpServletRequest req, HttpServletResponse res) throws IOException {
+    private void retainInput(HttpServletRequest req, String userName, String email, String phone) {
+        req.setAttribute("userName", userName);
+        req.setAttribute("email", email);
+        req.setAttribute("phone", phone);
+    }
+
+    
+	private void signIn(HttpServletRequest req, HttpServletResponse res) throws IOException {
         UserAccount service = new UserAccountImpl(dataSource);
 
         String email = safeTrim(req.getParameter("email"));
@@ -88,13 +121,18 @@ public class UserController extends HttpServlet {
         if (user != null) {
             HttpSession session = req.getSession();
             session.setAttribute("currentUser", user);
-            res.sendRedirect(req.getContextPath() + "/UserController?action=GetAll");
+            res.sendRedirect(req.getContextPath() + "/ItemController");
         } else {
             res.sendRedirect(req.getContextPath() + "/user/login.jsp?error=Invalid+email+or+password");
         }
     }
 
-    private void getAll(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+	private String safeTrim(String value) {
+	    return value == null ? "" : value.trim();
+	}
+
+
+	private void getAll(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         HttpSession session = req.getSession(false);
         if (session == null || session.getAttribute("currentUser") == null) {
             res.sendRedirect(req.getContextPath() + "/user/login.jsp?error=Please+login");
@@ -113,7 +151,7 @@ public class UserController extends HttpServlet {
 
         String idStr = req.getParameter("id");
         if (idStr == null) {
-            res.sendRedirect(req.getContextPath() + "/UserController?action=GetAll&error=Invalid+id");
+            res.sendRedirect(req.getContextPath() + "/user/UserController?action=GetAll&error=Invalid+id");
             return;
         }
 
@@ -121,28 +159,28 @@ public class UserController extends HttpServlet {
         try {
             id = Long.parseLong(idStr);
         } catch (NumberFormatException e) {
-            res.sendRedirect(req.getContextPath() + "/UserController?action=GetAll&error=Invalid+id");
+            res.sendRedirect(req.getContextPath() + "/user/UserController?action=GetAll&error=Invalid+id");
             return;
         }
 
-        String username = safeTrim(req.getParameter("username"));
+        String userName = safeTrim(req.getParameter("userName"));
         String email = safeTrim(req.getParameter("email"));
         String phone = safeTrim(req.getParameter("phone"));
 
-        if (username.isEmpty() || email.isEmpty()) {
+        if (userName.isEmpty() || email.isEmpty()) {
             res.sendRedirect(req.getContextPath() + "/user/edit-user.jsp?id=" + id + "&error=Invalid+input");
             return;
         }
 
         User user = new User();
-        user.setUserName(username);
+        user.setUserName(userName);
         user.setEmail(email);
         user.setPhone(phone);
 
         boolean updated = service.updateUser(id, user);
 
         if (updated) {
-            res.sendRedirect(req.getContextPath() + "/UserController?action=GetAll&msg=User+updated+successfully");
+            res.sendRedirect(req.getContextPath() + "/user/UserController?action=GetAll&msg=User+updated+successfully");
         } else {
             res.sendRedirect(req.getContextPath() + "/user/edit-user.jsp?id=" + id + "&error=Failed+to+update+user");
         }
@@ -152,7 +190,7 @@ public class UserController extends HttpServlet {
         UserAccount service = new UserAccountImpl(dataSource);
         String idStr = req.getParameter("id");
         if (idStr == null) {
-            res.sendRedirect(req.getContextPath() + "/UserController?action=GetAll&error=Invalid+id");
+            res.sendRedirect(req.getContextPath() + "/user/UserController?action=GetAll&error=Invalid+id");
             return;
         }
 
@@ -160,30 +198,35 @@ public class UserController extends HttpServlet {
         try {
             id = Long.parseLong(idStr);
         } catch (NumberFormatException e) {
-            res.sendRedirect(req.getContextPath() + "/UserController?action=GetAll&error=Invalid+id");
+            res.sendRedirect(req.getContextPath() + "/user/UserController?action=GetAll&error=Invalid+id");
             return;
         }
 
         boolean deleted = service.deleteUser(id);
 
         if (deleted) {
-            res.sendRedirect(req.getContextPath() + "/UserController?action=GetAll&msg=User+deleted+successfully");
+            res.sendRedirect(req.getContextPath() + "/user/UserController?action=GetAll&msg=User+deleted+successfully");
         } else {
-            res.sendRedirect(req.getContextPath() + "/UserController?action=GetAll&error=Failed+to+delete+user");
+            res.sendRedirect(req.getContextPath() + "/user/UserController?action=GetAll&error=Failed+to+delete+user");
         }
     }
 
     private void logout(HttpServletRequest req, HttpServletResponse res) throws IOException {
         HttpSession session = req.getSession(false);
-        if (session != null) session.invalidate();
-        Cookie cookie = new Cookie("currentUser", "");
-        cookie.setPath(req.getContextPath());
-        cookie.setMaxAge(0);
-        res.addCookie(cookie);
-        res.sendRedirect(req.getContextPath() + "/user/login.jsp?msg=Logged+out");
-    }
-
-    private String safeTrim(String s) {
-        return s == null ? "" : s.trim();
+        if (session != null) {
+            session.invalidate(); 
+        }
+        
+        
+        Cookie[] cookies = req.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                cookie.setMaxAge(0);
+                cookie.setPath(req.getContextPath());
+                res.addCookie(cookie);
+            }
+        }
+        
+        res.sendRedirect(req.getContextPath() + "/user/login.jsp?msg=Logged+out+successfully");
     }
 }

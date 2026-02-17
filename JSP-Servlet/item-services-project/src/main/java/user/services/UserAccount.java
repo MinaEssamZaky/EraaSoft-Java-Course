@@ -16,4 +16,6 @@ public interface UserAccount {
     boolean deleteUser(Long id);
 
     boolean isEmailExists(String email);
+
+	User getUser(Long id);
 }

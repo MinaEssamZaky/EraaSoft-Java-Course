@@ -35,8 +35,8 @@ public class Item {
     public double getPrice() { return price; }
     public void setPrice(double price) { this.price = price; }
 
-    public int gettotalNumber() { return totalNumber; }
-    public void settotalNumber(int totalNumber) { this.totalNumber = totalNumber; }
+    public int getTotalNumber() { return totalNumber; }
+    public void setTotalNumber(int totalNumber) { this.totalNumber = totalNumber; }
 
     public String getDesc() { return desc; }
     public void setDesc(String desc) { this.desc = desc; }
